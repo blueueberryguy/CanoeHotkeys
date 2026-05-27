@@ -2,7 +2,7 @@
 
 Configurable hotkeys for choosing your canoe type at any canoe station - no more clicking between canoe types.
 
-![Hotkey overlay on the canoe selection screen](images/overlay.png)
+![Hotkey overlay on the canoe selection screen]([images/overlay.png](https://github.com/user-attachments/assets/3d68d867-8ba7-40fb-aa91-6a0570194dfb))
 
 ## How it works
 
@@ -10,7 +10,7 @@ When the canoe shaping dialog opens ("What sort of canoe would you like to make?
 
 ## Config
 
-![Config panel](images/config.png)
+![Config panel]([images/config.png](https://github.com/user-attachments/assets/aa3a705e-1e77-4a6d-9b54-eb87786eb3ec))
 
 Each canoe type has its own keybind in the plugin's config panel. Defaults:
 
