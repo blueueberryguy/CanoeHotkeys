@@ -6,15 +6,13 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.MenuAction;
-import net.runelite.api.gameval.InterfaceID;
-import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.config.Keybind;
 import net.runelite.client.input.KeyListener;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.overlay.OverlayManager;
 
 @Slf4j
 @PluginDescriptor(
@@ -34,16 +32,24 @@ public class CanoeHotkeysPlugin extends Plugin implements KeyListener
 	@Inject
 	private ClientThread clientThread;
 
+	@Inject
+	private OverlayManager overlayManager;
+
+	@Inject
+	private CanoeHotkeysOverlay overlay;
+
 	@Override
 	protected void startUp()
 	{
 		keyManager.registerKeyListener(this);
+		overlayManager.add(overlay);
 	}
 
 	@Override
 	protected void shutDown()
 	{
 		keyManager.unregisterKeyListener(this);
+		overlayManager.remove(overlay);
 	}
 
 	@Override
@@ -61,17 +67,16 @@ public class CanoeHotkeysPlugin extends Plugin implements KeyListener
 		}
 
 		int widgetId = match.widgetId;
-		Widget widget = client.getWidget(widgetId);
-		if (widget == null || widget.isHidden())
+		if (client.getWidget(widgetId) == null)
 		{
 			return;
 		}
 
 		e.consume();
 
-		String option = "Make " + match.optionLabel;
+		String option = "Make<col=ff9040> " + match.optionLabel;
 		clientThread.invoke(() -> client.menuAction(
-			-1, widgetId, MenuAction.CC_OP, 1, -1, option, ""));
+			0, widgetId, MenuAction.CC_OP, 1, -1, option, ""));
 	}
 
 	@Override
@@ -95,24 +100,5 @@ public class CanoeHotkeysPlugin extends Plugin implements KeyListener
 	CanoeHotkeysConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(CanoeHotkeysConfig.class);
-	}
-
-	private enum CanoeType
-	{
-		LOG(InterfaceID.Canoeing.LOG, "Log canoe", CanoeHotkeysConfig::logKeybind),
-		DUGOUT(InterfaceID.Canoeing.DUGOUT, "Dugout canoe", CanoeHotkeysConfig::dugoutKeybind),
-		STABLE_DUGOUT(InterfaceID.Canoeing.STABLE_DUGOUT, "Stable dugout canoe", CanoeHotkeysConfig::stableDugoutKeybind),
-		WAKA(InterfaceID.Canoeing.WAKA, "Waka canoe", CanoeHotkeysConfig::wakaKeybind);
-
-		final int widgetId;
-		final String optionLabel;
-		final java.util.function.Function<CanoeHotkeysConfig, Keybind> keybind;
-
-		CanoeType(int widgetId, String optionLabel, java.util.function.Function<CanoeHotkeysConfig, Keybind> keybind)
-		{
-			this.widgetId = widgetId;
-			this.optionLabel = optionLabel;
-			this.keybind = keybind;
-		}
 	}
 }
